@@ -1,7 +1,7 @@
 body{
     margin: 0px;
-    background-color: #721c24;
-    font: optimus;
+    background-color: #36485a;
+    font-family: optimus;
     color: black;
 }
 @font-face{
@@ -21,21 +21,17 @@ body{
     font-family:optimus;
     padding: 5px 10px;
     color:green;
-    font-size:xxlarge;
+    font-size:-webkit-xxx-large;
+    font-size:xxx-large;
 }
 h1, h2, h3, h4{
     border-bottom: 2px solid orange;
 }
 .corpo{
-    margin-top: 5px;    
+    margin-top: 15px;    
     background-color: white;
 }
-.corpo h4{
-    font-family: renaissance;
-}
-.corpo h4 span{
-    font-family: heineken;
-}
+
 .fotos-destaque img{
     width:100%;
     height: 400px;
@@ -81,4 +77,15 @@ footer li{
             float: left;
             margin-left: 3%;
     }
+    .corpo{
+    	width: 90%;
+    }
+}
+
+.falsolink li{
+	list-style-type: none;
+	cursor:pointer;
+}
+.falsolink li:hover{
+	color: #36485a;
 }
