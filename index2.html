@@ -41,12 +41,14 @@
         <!-- abre o corpo do site -section1 -->
         <section class="container corpo">
             <div>
-                <h1>Bem-vindo ao meu site</h1>
-                <p>Sou o professor Victor Hugo Lopes. Atuo nas disciplinas que envolvem a engenharia de software, em nível técnico e superior. Estou na docência desde 2011, mas já atua com computação desde 2003.</p>
+            	<div id="body-header">
+	                <h1>Bem-vindo ao meu site</h1>
+	                <p>Sou o professor Victor Hugo Lopes. Atuo nas disciplinas que envolvem a engenharia de software, em nível técnico e superior. Estou na docência desde 2011, mas já atua com computação desde 2003.</p>
+	            </div>    
                 <div class="row">
                 	
                 	<div class="col-12 col-md-12 col-xl-12 col-sm-12">
-                		<h5>Destaque</h5>
+                		<h5 id="destaque-header">Destaque</h5>
                 		<div id="mostraPost" class="post">
                 			
                 		</div>
@@ -122,7 +124,7 @@
            			i=1;
            			while(i<=5){
            				if(data[count-1].post_status=="publish" && data[count-1].post_type=="post"){
-           					item = "<li onClick='abrePost(\""+data[count-1].ID+"\")'>"+data[count-1].post_title+"</li>";
+           					item = "<li onClick='abrePostClicado(\""+data[count-1].ID+"\")'>"+data[count-1].post_title+"</li>";
            					$("#mostraUltimosPosts").append(item);
            					i++;
            				}
@@ -132,6 +134,25 @@
                	}).fail(function(request, error){
                		alert("falhou --"+error);
             });	
+       	}
+       	function abrePostClicado(id){
+       		p = null;
+       		for(i=0;i<posts.length;i++){
+       			if(posts[i].ID == id){
+       				p =posts[i];
+       				break;
+       			}
+       		}
+       		if(p!=null){
+       			preparaTela();
+       			abrePost(p);
+       			document.title = "Professor Victor Hugo Lopes - " + p.post_title;
+       		}	
+       	}
+       	function preparaTela(){
+       		$("#body-header").remove();
+       		$("#mostraPost").empty();
+       		$("#destaque-header").remove();
        	}
        	function abrePost(p){
        		item = "<h2 class='post-title entry-title'>"+p.post_title+"</h2>";
