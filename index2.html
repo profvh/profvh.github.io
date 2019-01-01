@@ -2,9 +2,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta lang="pt_br">
         <title>Professor Victor Hugo Lázaro Lopes</title>
         <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/principal.css">
+        
+        <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/principal.css">
+
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     </head>
@@ -24,9 +27,6 @@
                 <li class="nav-item active">
                   <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">
-                	<a class="nav-link" href="#">Artigos</a>
-                </li>
                 
               </ul>
               <form class="form-inline my-2 my-lg-0">
@@ -42,15 +42,24 @@
         <section class="container corpo">
             <div>
                 <h1>Bem-vindo ao meu site</h1>
-                
+                <p>Sou o professor Victor Hugo Lopes. Atuo nas disciplinas que envolvem a engenharia de software, em nível técnico e superior. Estou na docência desde 2011, mas já atua com computação desde 2003.</p>
                 <div class="row">
-                	<div class="col-12 col-md-3 col-xl-4 col-sm-6">
+                	
+                	<div class="col-12 col-md-12 col-xl-12 col-sm-12">
+                		<h5>Destaque</h5>
+                		<div id="mostraPost" class="post">
+                			
+                		</div>
+                	</div>
+
+                	<div class="col-12 col-md-8 col-xl-8 col-sm-6">
+                		<h5>Últimos Posts</h5>
+                		<div id="mostraUltimosPosts" class="falsolink"></div>
+                	</div>
+
+                	<div class="col-12 col-md-4 col-xl-4 col-sm-6">
                 		<h5>Categorias</h5>
                 		<div id="mostraCategorias" class="falsolink"></div>
-                	</div>
-                	<div class="col-12 col-md-3 col-xl-4 col-sm-6">
-                		<h5>Últimos Posts</h5>
-                		<div id="mostraUltimosPosts"></div>
                 	</div>
                 	
                 </div>
@@ -79,6 +88,17 @@
        		carregaCategorias();
        		carregaUltimosPosts();
        	}
+       	var posts;
+       	function carregaPrincipal(){
+       		count = posts.length;
+       		c = Math.floor((Math.random() * count-1) + 1);
+       		while(posts[c].post_status!="publish" && posts[c].post_type!="post"){
+       			c--;
+       			if(c<0) c = count-1;
+       		}
+       		abrePost(posts[c]);          		
+           	
+       	}
        	function carregaCategorias(){
        		$.ajax({
                	url:"data/wp_terms.json"
@@ -97,6 +117,7 @@
        		$.ajax({
                	url:"data/wp_posts.json"
            		}).done(function(data){
+           			posts = data;
            			count = data.length;
            			i=1;
            			while(i<=5){
@@ -107,10 +128,18 @@
            				}
            				count--;
            			}
-           			alert(data[count-1].ID);
+           			carregaPrincipal();
                	}).fail(function(request, error){
                		alert("falhou --"+error);
             });	
+       	}
+       	function abrePost(p){
+       		item = "<h2 class='post-title entry-title'>"+p.post_title+"</h2>";
+           	$("#mostraPost").append(item);
+           	meta = "<div class='entry-meta'><ul class='post-meta'><li><span class='posted-on'><time class='entry-date published updated' datetime='"+p.post_date+"'>"+p.post_date+"</time></span></li></ul></div>";
+           	$("#mostraPost").append(meta);
+           	corpo = "<div class='container post-body'>"+p.post_content+"</div>";
+           	$("#mostraPost").append(corpo);
        	}
     </script>
 </html>

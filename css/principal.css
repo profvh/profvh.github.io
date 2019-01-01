@@ -27,6 +27,13 @@ body{
 h1, h2, h3, h4{
     border-bottom: 2px solid orange;
 }
+h5, h6{
+    border-bottom: 2px solid #36485a;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #36485a;
+}
+
 .corpo{
     margin-top: 15px;    
     background-color: white;
@@ -70,7 +77,12 @@ footer li{
 .empurra{
     clear:both;
 }
-@media only screen and (min-width: 576px) {
+@media (min-width: 576px){
+	.container{
+		width: 100%;
+	}
+}
+@media (min-width: 576px) {
     .jumbotron li{
             width: 47%;
             height: auto;
@@ -88,4 +100,14 @@ footer li{
 }
 .falsolink li:hover{
 	color: #36485a;
+}
+
+.post{
+	font-family: Arial,Verdana;
+}
+.post h2, .post h3, .post h4{
+	border:initial;
+}
+.post-body{
+	margin-bottom: 50px;
 }
