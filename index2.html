@@ -83,14 +83,77 @@
     <script src="js/jquery.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+    	var category;
+    	var posts = null;
+    	var terms = null;
+    	var term_rel = null;
     	$(document).ready(function() {
            carregaDados();
+           category = getUrlParameter("categoria");
+           if(category != null)
+           		buscaPelaCategoria(category);
+           	
        	});
+       	function buscaPeloNome(){
+       		post = null;
+       		selectedPost = getUrlParameter("p");
+           	if(selectedPost != null){
+           		for(i=0;i<this.posts.length;i++){
+	       			if(this.posts[i].post_name == selectedPost){
+	       				post =this.posts[i];
+	       				break;
+	       			}
+	       		}
+           	}
+           	if(post != null)
+           		abrePostClicado(post.ID);
+       	}
+       	function buscaPelaCategoria(cat){
+       		t = null; var tax;
+       		while(terms ==null){
+       			//alert("aguardando");
+       		}	
+       		while(term_rel ==null){
+       			//alert("aguardando");
+       		}
+	       		for(i=0;i<terms.length;i++){
+	       			if(terms[i].slug == cat){
+	       				t =terms[i];
+	       				break;
+	       			}
+	       		}
+	       		if(t!=null){
+	       			count = 0;
+	       			for(i=0;i<term_rel.length;i++){
+	       				if(term_rel[i].term_taxonomy_id==t.term_id){
+	       					tax[count] = term_rel[i];
+	       					count++;
+	       				}
+	       			}
+	       		}
+	       		
+       	}
+       	function getUrlParameter(sParam) {
+			    var sPageURL = window.location.search.substring(1),
+			        sURLVariables = sPageURL.split('&'),
+			        sParameterName,
+			        i;
+
+			    for (i = 0; i < sURLVariables.length; i++) {
+			        sParameterName = sURLVariables[i].split('=');
+
+			        if (sParameterName[0] === sParam) {
+			            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+			        }
+			    }
+			    return null;
+			};
        	function carregaDados(){
        		carregaCategorias();
        		carregaUltimosPosts();
+       		carregaCatRel();
        	}
-       	var posts;
+       	
        	function carregaPrincipal(){
        		count = posts.length;
        		c = Math.floor((Math.random() * count-1) + 1);
@@ -101,13 +164,23 @@
        		abrePost(posts[c]);          		
            	
        	}
+       	function carregaCatRel(){
+       		$.ajax({
+               	url:"data/wp_term_relationships.json"
+           		}).done(function(data){
+           			term_rel = data;           			
+               	}).fail(function(request, error){
+               		alert("falhou ao buscar wp_term_relationships "+error);
+            });	               
+           
+       	}
        	function carregaCategorias(){
        		$.ajax({
                	url:"data/wp_terms.json"
-           		}).done(function(data){
-           			//alert(data.length);
+           		}).done(function(data){           			
+           			terms = data;
            			$.each(data,function(indice,valor){
-           				item = "<li onClick='abreCategoria(\""+valor.term_id+"\")'>"+valor.name+"</li>";
+           				item = "<li><a href='?categoria="+valor.slug+"'>"+valor.name+"</a></li>";
            				$("#mostraCategorias").append(item);
            			});
                	}).fail(function(request, error){
@@ -120,17 +193,20 @@
                	url:"data/wp_posts.json"
            		}).done(function(data){
            			posts = data;
+           			window.posts = data;
            			count = data.length;
            			i=1;
            			while(i<=5){
            				if(data[count-1].post_status=="publish" && data[count-1].post_type=="post"){
-           					item = "<li onClick='abrePostClicado(\""+data[count-1].ID+"\")'>"+data[count-1].post_title+"</li>";
+           					//item = "<li onClick='abrePostClicado(\""+data[count-1].ID+"\")'>"+data[count-1].post_title+"</li>";
+           					item = "<li><a href='?p="+data[count-1].post_name+"'>"+data[count-1].post_title+"</a></li>";
            					$("#mostraUltimosPosts").append(item);
            					i++;
            				}
            				count--;
            			}
            			carregaPrincipal();
+           			buscaPeloNome();
                	}).fail(function(request, error){
                		alert("falhou --"+error);
             });	
