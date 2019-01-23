@@ -87,12 +87,9 @@
     	var posts = null;
     	var terms = null;
     	var term_rel = null;
+    	var tax = [];
     	$(document).ready(function() {
-           carregaDados();
-           category = getUrlParameter("categoria");
-           if(category != null)
-           		buscaPelaCategoria(category);
-           	
+           carregaDados();           	
        	});
        	function buscaPeloNome(){
        		post = null;
@@ -108,20 +105,20 @@
            	if(post != null)
            		abrePostClicado(post.ID);
        	}
-       	function buscaPelaCategoria(cat){
-       		t = null; var tax;
-       		while(terms ==null){
-       			//alert("aguardando");
-       		}	
-       		while(term_rel ==null){
-       			//alert("aguardando");
-       		}
+       	function buscaPelaCategoria(){
+       		this.category = getUrlParameter("categoria");
+           	
+       		t = null; 
+       		this.tax = [];
+       			//encontrando o termo de interesse para obter seu ID
 	       		for(i=0;i<terms.length;i++){
-	       			if(terms[i].slug == cat){
+	       			if(terms[i].slug == this.category){
 	       				t =terms[i];
 	       				break;
 	       			}
 	       		}
+	       		//encontrando os id dos termos relacionados
+	       		//esses ids são os ids dos posts
 	       		if(t!=null){
 	       			count = 0;
 	       			for(i=0;i<term_rel.length;i++){
@@ -131,7 +128,20 @@
 	       				}
 	       			}
 	       		}
-	       		
+	       		getPosts();			
+       	}
+       	function getPosts(){
+       		//procurando os posts pelos IDs
+	       		var ps = []; //array de posts
+	       		cont=0;
+	       		c=100;
+	       		if(this.posts ==null && c>0){
+	       			c--;
+	       		}
+	       		if(this.posts == null){
+	       			carregaTodosPosts('bycat');
+	       		}
+		       		
        	}
        	function getUrlParameter(sParam) {
 			    var sPageURL = window.location.search.substring(1),
@@ -151,7 +161,6 @@
        	function carregaDados(){
        		carregaCategorias();
        		carregaUltimosPosts();
-       		carregaCatRel();
        	}
        	
        	function carregaPrincipal(){
@@ -168,7 +177,8 @@
        		$.ajax({
                	url:"data/wp_term_relationships.json"
            		}).done(function(data){
-           			term_rel = data;           			
+           			window.term_rel = data; 
+           			buscaPelaCategoria();      			
                	}).fail(function(request, error){
                		alert("falhou ao buscar wp_term_relationships "+error);
             });	               
@@ -178,15 +188,56 @@
        		$.ajax({
                	url:"data/wp_terms.json"
            		}).done(function(data){           			
-           			terms = data;
+           			window.terms = data;
            			$.each(data,function(indice,valor){
            				item = "<li><a href='?categoria="+valor.slug+"'>"+valor.name+"</a></li>";
            				$("#mostraCategorias").append(item);
            			});
+           			carregaCatRel();
                	}).fail(function(request, error){
                		alert("falhou "+error);
             });	               
            
+       	}
+       	function abrePostsBuscados(){
+       		cont=0;
+       		ps = [];
+       		for(i=0;i<this.tax.length;i++){
+       					t=this.tax[i].object_id;
+		       			for(ii=0;ii<this.posts.length;ii++){
+	       					if(this.posts[ii].ID == t && this.posts[ii].post_type=='post' && this.posts[ii].post_status=='publish'){
+	       						ps[cont]=this.posts[ii];
+	       						cont++;
+	       					}
+	       				}	
+		       		}
+		       	if(ps.length>0)
+		       		abreMultiplosPosts(ps);
+       	}
+       	function abreMultiplosPosts(ps){
+       		preparaTela();
+       		document.title = "Professor Victor Hugo Lopes - Listando posts de " + this.category;
+
+       		item = "<h2 class='post-title entry-title'>Listando posts de "+this.category+"</h2>";
+           	$("#mostraPost").append(item);
+           	var corpo = "<div class='container post-body'>";
+           	for(i=0;i<ps.length;i++){
+
+           		corpo += "<li><a href='?p="+ps[i].post_name+"'>"+ps[i].post_title+"</a></li>";
+           	}
+           	corpo += "</div>";
+           	$("#mostraPost").append(corpo);
+       	}
+       	function carregaTodosPosts(tp){
+       		$.ajax({
+               	url:"data/wp_posts.json"
+           		}).done(function(data){
+           			window.posts = data;   
+           			if(tp=='bycat')        			
+           				abrePostsBuscados();
+               	}).fail(function(request, error){
+               		alert("falhou o carregamento dos posts--"+error);
+            });	
        	}
        	function carregaUltimosPosts(){
        		$.ajax({
@@ -198,7 +249,6 @@
            			i=1;
            			while(i<=5){
            				if(data[count-1].post_status=="publish" && data[count-1].post_type=="post"){
-           					//item = "<li onClick='abrePostClicado(\""+data[count-1].ID+"\")'>"+data[count-1].post_title+"</li>";
            					item = "<li><a href='?p="+data[count-1].post_name+"'>"+data[count-1].post_title+"</a></li>";
            					$("#mostraUltimosPosts").append(item);
            					i++;
