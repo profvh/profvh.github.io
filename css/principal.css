@@ -50,16 +50,7 @@ h5, h6{
 .corpo a div{
     margin-bottom: 10px;
 }
-.corpo a:link{
-    text-decoration: none;
-    color: black;    
-}
-.corpo a:hover{
-    color:#212529;
-}
-.corpo a:visited{
-    color: black;
-}
+
 .jumbotron a div span{
     text-align: justify;
 }
@@ -110,4 +101,8 @@ footer li{
 }
 .post-body{
 	margin-bottom: 50px;
+}
+
+.icones-p{
+	margin-top: 30px;
 }
