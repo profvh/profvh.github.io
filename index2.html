@@ -29,8 +29,8 @@
                 </li>
                 
               </ul>
-              <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+              <form method="GET" action="index2.html" class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" name="search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
               </form>
             </div>
@@ -88,9 +88,28 @@
     	var terms = null;
     	var term_rel = null;
     	var tax = [];
+    	var busca;
     	$(document).ready(function() {
            carregaDados();           	
        	});
+       	function buscaForm(){
+       		this.busca = getUrlParameter("search").toLowerCase();
+       		this.busca = this.busca.replace("+"," ");
+       		cont=0;
+       		ps = [];
+       		if(this.busca != null){
+       			for(i=0;i<this.posts.length;i++){
+       				p = this.posts[i];
+       				titulo = p.post_title.toLowerCase();
+	       			if(titulo.includes(this.busca) && p.post_status=="publish" && p.post_type=="post"){
+	       				ps[cont] =this.posts[i];
+	       				cont++;
+	       			}
+	       		}
+       		}
+       		if(this.busca!=null || this.busca != "")
+		       		abreMultiplosPosts(ps,"busca");
+       	}
        	function buscaPeloNome(){
        		post = null;
        		selectedPost = getUrlParameter("p");
@@ -212,13 +231,22 @@
 	       				}	
 		       		}
 		       	if(ps.length>0)
-		       		abreMultiplosPosts(ps);
+		       		abreMultiplosPosts(ps,"categoria");
        	}
-       	function abreMultiplosPosts(ps){
+       	function abreMultiplosPosts(ps,tp){
        		preparaTela();
-       		document.title = "Professor Victor Hugo Lopes - Listando posts de " + this.category;
+       		title="Professor Victor Hugo Lopes - Listando posts de ";
+       		if(tp=="categoria"){
+       			title += this.category;
+       			item = "<h2 class='post-title entry-title'>Listando posts de "+this.category+"</h2>";
+       		}else if(tp=="busca"){
+       			title += this.busca;
+       			item = "<h2 class='post-title entry-title'>Listando posts da busca por ´´"+this.busca+"´´</h2>";
+       		}
+       		item += (ps.length==0) ? "<h5>Nenhum post encontrado!</h5>" : "";	
 
-       		item = "<h2 class='post-title entry-title'>Listando posts de "+this.category+"</h2>";
+       		document.title=title;
+       		
            	$("#mostraPost").append(item);
            	var corpo = "<div class='container post-body'>";
            	for(i=0;i<ps.length;i++){
@@ -257,6 +285,7 @@
            			}
            			carregaPrincipal();
            			buscaPeloNome();
+           			buscaForm();
                	}).fail(function(request, error){
                		alert("falhou --"+error);
             });	
